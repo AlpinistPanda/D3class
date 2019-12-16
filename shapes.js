@@ -1,31 +1,38 @@
-var dataArray = [{x:5,y:5},{x:10,y:15},{x:20,y:7},{x:30,y:18},{x:40,y:10}];
-var interpolateTypes = [d3.curveLinear,d3.curveNatural,d3.curveStep, d3.curveBasis, d3.curveBundle,d3.curveCardinal];
+var dataArray = [25,26,28,32,37,45,55,70,90,120,135,150,160,168,172,177,180];
+var dataYears = ['2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016'];
 
+var parseDate = d3.timeParse("%Y");
+
+
+var height = 200;
+var width = 500;
+
+var margin = {left:50,right:50,top:40,bottom:0};
+
+var y = d3.scaleLinear()
+            .domain([0,d3.max(dataArray)])
+            .range([height,0]);
+var x = d3.scaleTime()
+            .domain(d3.extent(dataYears,function(d){ return parseDate(d); }))
+            .range([0,width]);
+
+
+
+var yAxis = d3.axisLeft(y).ticks(3).tickPadding(10).tickSize(10);
+var xAxis = d3.axisBottom(x);
+
+var area = d3.area()
+                .x(function(d,i){ return x(parseDate(dataYears[i])); })
+                .y0(height)
+                .y1(function(d){ return y(d); });
 var svg = d3.select("body").append("svg").attr("height","100%").attr("width","100%");
+var chartGroup = svg.append("g").attr("transform","translate("+margin.left+","+margin.top+")");
 
-
-for (var p=0; p<6; p++) {
-
-        var line = d3.line()
-                        .x(function(d,i){ return d.x*6; })
-                        .y(function(d,i){ return d.y*4; })
-                        .curve(interpolateTypes[p]);
-
-        var shiftX = p*250;
-        var shiftY = 0;
-
-        var chartGroup = svg.append("g").attr("class","group"+p).attr("transform","translate("+shiftX+",0)");
-
-        chartGroup.append("path")
-              .attr("fill","none")
-              .attr("stroke","blue")
-              .attr("d",line(dataArray));
-
-        chartGroup.selectAll("circle.grp"+p)
-          .data(dataArray)
-          .enter().append("circle")
-                    .attr("class",function(d,i){ return "grp"+i; })
-                    .attr("cx",function(d,i){ return d.x*6; })
-                    .attr("cy",function(d,i){ return d.y*4; })
-                    .attr("r","2");
-}
+chartGroup.append("path").attr("d",area(dataArray));
+chartGroup.append("g")
+      .attr("class","axis y")
+      .call(yAxis);
+chartGroup.append("g")
+      .attr("class","axis x")
+      .attr("transform","translate(0,"+height+")")
+      .call(xAxis);
