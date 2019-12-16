@@ -1,14 +1,16 @@
-var dataArray = [{x:5,y:5},{x:10,y:15},{x:20,y:7},{x:30,y:18},{x:40,y:10}];
+var dataArray = [25,26,28,32,37,45,55,70,90,120,135,150,160,168,172,177,180];
+var dataYears = ['2000','2001','2002','2003','2004','2005','2006','2007','2008','2009','2010','2011','2012','2013','2014','2015','2016'];
 
-var svg = d3.select("body").append("svg").attr("height", "100%").attr("width", "100%");
+var height = 200;
+var width = 500;
 
-var line = d3.line()
-             .x(function(d, i) { return d.x*6})
-             .y(function(d, i) { return d.y*4;})
-             .curve(d3.curveStep);
-             // http://bl.ocks.org/d3indepth/b6d4845973089bc1012dec1674d3aff8
+var area = d3.area()
+                .x(function(d,i){ return i*20; })
+                .y0(height)
+                .y1(function(d){ return height - d; });
+var svg = d3.select("body").append("svg").attr("height","100%").attr("width","100%");
+svg.append("path").attr("d",area(dataArray));
 
-svg.append("path")
-   .attr("fill", "none")
-   .attr("stroke", "blue")
-   .attr("d", line(dataArray));
+// generator
+// blocks org
+
